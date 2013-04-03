@@ -1,0 +1,64 @@
+<?php
+
+    $role_id = 9999;
+    $auth = Zend_Auth::getInstance();    
+    if ($auth->hasIdentity()) {
+        $role_id = $auth->getIdentity()->role_id;
+    }
+
+?>
+
+<style type="text/css">
+    #bottom-container {height:50px;border-top:5px solid #780200;margin-bottom:5px;/*-moz-box-shadow: 0 0 5px #ddd;-webkit-box-shadow: 0 0 5px#ddd;box-shadow: 0 0 5px #ddd;*/}
+    #bottom-left {float:left;padding:15px;}
+    #bottom-right {float:right;color:#ccc;padding:15px;}
+    
+    a.bottom-link {text-decoration:none;color:#333333;padding-left:5px;font-size:11px;}
+    a.bottom-link:link {color:#333333;}
+    a.bottom-link:hover {color:#780200;}
+    
+    a.bottom-link-gray {text-decoration:none;color:#333333;}
+    a.bottom-link-gray:link {}
+    a.bottom-link-gray:hover {color:#666666;}
+</style>
+
+<script type="text/javascript">
+    
+;(function($){
+ 
+    $(document).ready(function(){
+        
+        $("#bmw-na-home").click(function(event){
+            event.preventDefault();
+            var url = $(this).prop('href');
+            if (!$.browser.msie) {
+                window.open(url, "Rolls-Royce");            
+            } else {
+                window.open(url);
+            }
+            
+            return false;
+        });
+        
+    });
+   
+})(jQuery);
+    
+</script>
+
+<div id="bottom-container">
+    
+    <span id="bottom-left">
+        
+        <a href="/" class="bottom-link">Home</a>
+        |<a href="/registration" class="bottom-link">Registration</a>                
+        |<a href="mailto:Angela.Bien@rolls-roycemotorcarsna.com" class="bottom-link">Contact</a>
+        
+        <?php if ($role_id == 1): ?> 
+            |<a href="/admin" class="bottom-link">Admin</a>            
+        <?php endif;?>
+        
+    </span>
+    <span id="bottom-right"><a href="http://www.rolls-roycemotorcars.com" class="bottom-link-gray" id="bmw-na-home">&copy; Rolls-Royce Motor Cars NA, LLC</a></span>
+    
+</div>

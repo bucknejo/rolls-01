@@ -1,0 +1,60 @@
+<?php 
+
+    $role_id = 9999;
+    $auth = Zend_Auth::getInstance();    
+    if ($auth->hasIdentity()) {
+        $role_id = $auth->getIdentity()->role_id;
+    }
+    
+    $config = Zend_Registry::get('config');
+    $title = $config->project->title;
+    
+    //echo get_include_path();
+    
+
+?>
+
+<style type="text/css">
+    
+    
+    /*#top-container {position:absolute;top:20px;left:0px;background-color:#999999;padding:15px 0px 15px 15px;height:50px;width:925px;}*/
+    
+    #top-container {border-top:5px solid #780200;text-align:center;}
+    
+    a.top-link {text-decoration:none;font-size:18px;padding:0px 5px 0px 0px;color:#666666;}
+    a.top-link:link {color:#666666;}
+    a.top-link:hover {color:#780200;}
+        
+    #top-image {width:50%;margin-left:auto;margin-right:auto;}
+    
+    #links {width:30%;margin-left: auto; margin-right:auto; margin-top:10px;margin-bottom:10px;border-bottom:1px solid #666666;}
+    #links ul {list-style-type:none;margin:0px;padding:0px;text-align: center;margin-bottom:10px;}
+    #links ul li {display:inline;}
+    
+</style>
+
+<div id="top-container">
+    
+    <div id="top-image">
+        <img src="/images/rr-logo.jpg" alt="" />
+    </div>
+    
+    <div id="links">
+        <ul>
+            <!--
+            <li><a href="/" class="top-link"><?php echo $title;?></a></li>
+            -->
+            <li><a href="/" class="top-link">Home</a></li>
+            <li><a href="/registration" class="top-link">Registration</a></li>
+            <li><a href="mailto:Angela.Bien@rolls-roycemotorcarsna.com" class="top-link">Contact</a></li>
+            <li>
+                <?php if ($role_id == 1): ?> 
+                    <a href="/admin" class="top-link">Admin</a>            
+                <?php endif;?>                
+            </li>
+        </ul>
+    </div>
+    
+</div>
+
+

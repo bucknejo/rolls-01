@@ -1,0 +1,73 @@
+
+<?php 
+
+if(!empty($this->users)) {$user = $this->users[0];}
+
+?>
+
+<style type="text/css">
+    /*#index-content {margin-bottom:15px;padding:10px;width:918px;border:1px solid #780200;-moz-box-shadow: 0 0 5px #ddd;-webkit-box-shadow: 0 0 5px#ddd;box-shadow: 0 0 5px #ddd;}*/
+    
+    #index-content {margin-bottom:15px;padding:10px;width:918px;}
+    #index-image-1 {}
+    #index-image-2 {margin-left:525px;}
+    
+    #index-header {font-size:18px;font-weight:bold;text-align:center;padding:20px;}
+    
+    .index-paragraph {padding:5px 20px;}
+    
+    #register-now {left:50%;width:150px;margin-left:-75px;margin-top:15px;margin-bottom:15px;}
+    
+    
+</style>
+
+
+<script type="text/javascript">
+    
+;(function($){
+ 
+    $(document).ready(function(){
+        
+        $("#register-now").button().click(function(){
+           location.replace('/registration'); 
+        });
+        
+    });
+   
+})(jQuery);
+    
+</script>
+
+<div id="index-content">
+
+    <!--
+    <img src="/images/home-image-01.jpg" alt="" id="index-image-1"/>
+    -->
+    
+    <img src="/images/lockdown-cropped.jpg" alt="" id="index-image-1"/>
+
+    <div id="index-header">2013 Regional Business Meeting and RR5 Product Training</div>
+    
+    <div class="index-paragraph">
+        Welcome <?php echo $user["first_name"];?>,
+    </div>
+
+    <div class="index-paragraph">
+        2013 will be an exciting year for us as we welcome the launch of a new Rolls-Royce model, currently codenamed the RR5.  This new product provides us with new opportunities to introduce fresh customers to our brand and your dealership.
+    </div>
+    
+    <div class="index-paragraph">
+        Come and get a sneak peek at the most powerful Rolls-Royce car in the world! The exterior of this new Rolls-Royce leaves no doubt that this is a car for those who enjoy the pleasure of driving, with new and modern materials exclusive to the RR5 in the interior. 
+    </div>
+    
+    <div class="index-paragraph">
+        Spend some time with us as we unveil the most exciting, dramatic and power car in our history.
+    </div>
+    
+    <div id="register-now">
+        Register Now
+    </div>
+    
+
+</div>
+

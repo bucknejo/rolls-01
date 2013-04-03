@@ -1,0 +1,972 @@
+<style type="text/css">
+    #index-content {margin-bottom:15px;padding:10px;width:918px;border:0px solid #780200;-moz-box-shadow: 0 0 5px #ddd;-webkit-box-shadow: 0 0 5px#ddd;box-shadow: 0 0 5px #ddd;}
+    #index-image-1 {}
+    #index-image-2 {margin-left:525px;}
+</style>
+
+<!-- users -->
+<script type="text/javascript">
+
+;(function($){
+ 
+    $(document).ready(function(){
+        
+        $("#detail").dialog({
+            autoOpen: false,
+            modal: true,
+            height: 450,
+            width: 450,
+            show: "slide",
+            hide: "clip"
+        });
+        
+        // users grid
+        $("#list-users").jqGrid({
+            url: '/admin/read/table/view_users/format/html',
+            datatype: "xml",
+            colNames:['Index',
+                    'id',
+                    'Date Created',
+                    'Last Updated',
+                    'User',
+                    'Active',
+                    'User Id',
+                    'Password',
+                    'Role Id',
+                    'First Name',
+                    'Last Name',
+                    'Email',
+                    'Q Number',
+                    'Emp No',
+                    'Title',
+                    'Dealer',
+                    'Location',
+                    'Attending',
+                    'Registered Room',
+                ],
+            colModel:[
+                {name:'1',index:'1', hidden: true},
+                {name:'id',index:'id', hidden: true},
+                {name:'date_created',index:'date_created', align: 'center', hidden: true},
+                {name:'last_updated',index:'last_updated', align: 'center', hidden: true},
+                {name:'user',index:'user', hidden: true},
+                {name:'active',index:'active', align: 'center', hidden: true},
+                {name:'user_id',index:'user_id', editable:true},
+                {name:'password',index:'password', hidden: true},
+                {name:'role_id',index:'role_id', hidden: true},
+                {name:'first_name',index:'first_name', align: 'center', editable:true},
+                {name:'last_name',index:'last_name', align: 'center', editable:true},
+                {name:'email',index:'email', hidden:true},
+                {name:'q_number',index:'q_number', align: 'center', hidden:true},
+                {name:'emp_no',index:'emp_no', hidden: true},
+                {name:'title',index:'title', editable:true},
+                {name:'dealer_id',index:'dealer_id', align: 'center', editable:false},
+                {name:'location_id',index:'location_id', align: 'center',  editable:false},
+                {name:'attending',index:'attending', align: 'center', editable:false},
+                {name:'registered_room',index:'registered_room', align: 'center',  editable:false},
+            ],
+            pager:'#pager-users',
+            rowNum: 25,
+            rowList: [5, 10, 25, 50, 100, 500],
+            sortname: '1',
+            sortorder: 'asc',
+            viewrecords: true,
+            editurl: '/admin/edit/table/users/format/html',            
+            height: 350,
+            width: 875,
+            caption: "Users",
+            loadError: function(xhr, status, error) {
+                    $("#detail-inner").html(status + "<br>" + error);
+                    $("#detail").dialog("open");
+                    return false;
+            },
+            ondblClickRow: function(id) {
+                
+                var editOptions = {
+                    closeAfterEdit:true,
+                    editData:{
+                    },
+                    afterComplete: function() {
+                    }                            
+                };
+
+                var ret = $(this).jqGrid('editGridRow', id, editOptions);
+                
+                
+            }
+        });
+        
+        $("#list-users").jqGrid(
+            'navGrid',
+            '#pager-users',
+            {del:false,add:false,edit:false,search:true,view:false},
+            {
+                closeAfterEdit:true,
+                editData:{
+                    //'editing_shit':'editing',
+                },
+                afterComplete: function() {
+                }
+                                
+            }, // parms for edit
+            {
+                closeAfterAdd:true,
+                editData:{
+                    //'adding_shit':'adding',
+                },
+                afterComplete: function() {
+                }                
+            }, // parms for add
+            {
+                afterComplete: function() {
+                }                
+            }, // parms for delete
+            {closeAfterSearch:true,Find:'Find...',multipleSearch:true},
+            {} // parms for view
+        );
+
+        $("#list-users").jqGrid(
+            'navGrid',
+            '#pager-users'
+        ).jqGrid('navButtonAdd', '#pager-users',
+            {
+                caption: "",
+                buttonicon: "ui-icon-arrowstop-1-s",
+                onClickButton: function() {
+                    location.replace('<?php echo $this->excel ."view_users"; ?>');
+                },
+                position: "last",
+                title: "Excel Download",
+                cursor: "pointer"
+            }
+        ).jqGrid('navButtonAdd', '#pager-users',
+            {
+                caption: "",
+                buttonicon: "ui-icon-home",
+                onClickButton: function() {
+                    location.replace('/')
+                },
+                position: "last",
+                title: "Home",
+                cursor: "pointer"
+            }
+        );
+
+
+        // attendees grid        
+        $("#list-attendees").jqGrid({
+            url: '/admin/read/table/view_attendees/format/html',
+            datatype: "xml",
+            colNames:['Index',
+                    'id',
+                    'Date Created',
+                    'Last Updated',
+                    'User',
+                    'Active',
+                    'First Name',
+                    'Last Name',
+                    'Location',
+                    'Manager',
+                    'Session',
+                    'Dealer',
+                    'Title',
+                ],
+            colModel:[
+                {name:'1',index:'1', hidden: true},
+                {name:'id',index:'id', hidden: true},
+                {name:'date_created',index:'date_created', align: 'center', hidden: true},
+                {name:'last_updated',index:'last_updated', align: 'center', hidden: true},
+                {name:'user',index:'user', hidden: true},
+                {name:'active',index:'active', align: 'center', hidden: true},
+                {name:'first_name',index:'first_name', hidden: false, editable:true},
+                {name:'last_name',index:'last_name', hidden: false, editable:true},
+                {name:'location_id',index:'location_id', hidden: false, editable:true},
+                {name:'manager_id',index:'manager_id', hidden: false, editable:true},
+                {name:'session_id',index:'session_id', hidden: false, editable:true},
+                {name:'dealer_id',index:'dealer_id', hidden: false, editable:true},
+                {name:'title',index:'title', hidden: false, editable:true},
+            ],
+            pager:'#pager-attendees',
+            rowNum: 25,
+            rowList: [5, 10, 25, 50, 100, 500],
+            sortname: '1',
+            sortorder: 'asc',
+            viewrecords: true,
+            editurl: '/admin/edit/table/attendees/format/html',            
+            height: 350,
+            width: 875,
+            caption: "Session Attendees",
+            loadError: function(xhr, status, error) {
+                    $("#detail-inner").html(status + "<br>" + error);
+                    $("#detail").dialog("open");
+                    return false;
+            },
+            ondblClickRow: function(id) {
+                
+                var editOptions = {
+                    closeAfterEdit:true,
+                    editData:{
+                    },
+                    afterComplete: function() {
+                    }                            
+                };
+
+                var ret = $(this).jqGrid('editGridRow', id, editOptions);
+                
+                
+            }
+        });
+        
+        $("#list-attendees").jqGrid(
+            'navGrid',
+            '#pager-attendees',
+            {del:false,add:false,edit:false,search:true,view:false},
+            {
+                closeAfterEdit:true,
+                editData:{
+                    //'editing_shit':'editing',
+                },
+                afterComplete: function() {
+                }
+                                
+            }, // parms for edit
+            {
+                closeAfterAdd:true,
+                editData:{
+                    //'adding_shit':'adding',
+                },
+                afterComplete: function() {
+                }                
+            }, // parms for add
+            {
+                afterComplete: function() {
+                }                
+            }, // parms for delete
+            {closeAfterSearch:true,Find:'Find...',multipleSearch:true},
+            {} // parms for view
+        );
+
+        $("#list-attendees").jqGrid(
+            'navGrid',
+            '#pager-attendees'
+        ).jqGrid('navButtonAdd', '#pager-attendees',
+            {
+                caption: "",
+                buttonicon: "ui-icon-arrowstop-1-s",
+                onClickButton: function() {
+                    location.replace('<?php echo $this->excel ."view_attendees"; ?>');
+                },
+                position: "last",
+                title: "Excel Download",
+                cursor: "pointer"
+            }
+        ).jqGrid('navButtonAdd', '#pager-attendees',
+            {
+                caption: "",
+                buttonicon: "ui-icon-home",
+                onClickButton: function() {
+                    location.replace('/')
+                },
+                position: "last",
+                title: "Home",
+                cursor: "pointer"
+            }
+        );
+        
+
+        // locations grid        
+        $("#list-locations").jqGrid({
+            url: '/admin/read/table/locations/format/html',
+            datatype: "xml",
+            colNames:['Index',
+                    'id',
+                    'Date Created',
+                    'Last Updated',
+                    'User',
+                    'Active',
+                    'Name',
+                    'Description',
+                    'Hotel',
+                    'Hotel URL',
+                    'Start Date',
+                    'End Date',
+                    'Group Code',
+                    'Negotiated Rate',
+                    'When',
+                    'Why',
+                ],
+            colModel:[
+                {name:'1',index:'1', hidden: true},
+                {name:'id',index:'id', hidden: true},
+                {name:'date_created',index:'date_created', align: 'center', hidden: true},
+                {name:'last_updated',index:'last_updated', align: 'center', hidden: true},
+                {name:'user',index:'user', hidden: true},
+                {name:'active',index:'active', align: 'center', hidden: true},
+                {name:'name',index:'name', hidden: false, editable:true},
+                {name:'description',index:'description', hidden: false, editable:true},
+                {name:'hotel',index:'hotel', hidden: false, editable:true},
+                {name:'hotel_url',index:'hotel_url', hidden: false, editable:true},
+                {name:'start_date',index:'start_date', hidden: false, editable:true},
+                {name:'end_date',index:'end_date', hidden: false, editable:true},
+                {name:'group_code',index:'group_code', hidden: false, editable:true},
+                {name:'negotiated_rate',index:'negotiated_rate', hidden: false, editable:true},
+                {name:'when',index:'when', hidden: false, editable:true},
+                {name:'why',index:'why', hidden: false, editable:true},
+            ],
+            pager:'#pager-locations',
+            rowNum: 25,
+            rowList: [5, 10, 25, 50, 100, 500],
+            sortname: '1',
+            sortorder: 'asc',
+            viewrecords: true,
+            editurl: '/admin/edit/table/locations/format/html',            
+            height: 350,
+            width: 875,
+            caption: "Locations",
+            loadError: function(xhr, status, error) {
+                    $("#detail-inner").html(status + "<br>" + error);
+                    $("#detail").dialog("open");
+                    return false;
+            },
+            ondblClickRow: function(id) {
+                
+                var editOptions = {
+                    closeAfterEdit:true,
+                    editData:{
+                    },
+                    afterComplete: function() {
+                    }                            
+                };
+
+                var ret = $(this).jqGrid('editGridRow', id, editOptions);
+                
+                
+            }
+        });
+        
+        $("#list-locations").jqGrid(
+            'navGrid',
+            '#pager-locations',
+            {del:true,add:true,edit:true,search:true,view:false},
+            {
+                closeAfterEdit:true,
+                editData:{
+                    //'editing_shit':'editing',
+                },
+                afterComplete: function() {
+                }
+                                
+            }, // parms for edit
+            {
+                closeAfterAdd:true,
+                editData:{
+                    //'adding_shit':'adding',
+                },
+                afterComplete: function() {
+                }                
+            }, // parms for add
+            {
+                afterComplete: function() {
+                }                
+            }, // parms for delete
+            {closeAfterSearch:true,Find:'Find...',multipleSearch:true},
+            {} // parms for view
+        );
+
+        $("#list-locations").jqGrid(
+            'navGrid',
+            '#pager-locations'
+        ).jqGrid('navButtonAdd', '#pager-locations',
+            {
+                caption: "",
+                buttonicon: "ui-icon-arrowstop-1-s",
+                onClickButton: function() {
+                    location.replace('<?php echo $this->excel ."locations"; ?>');
+                },
+                position: "last",
+                title: "Excel Download",
+                cursor: "pointer"
+            }
+        ).jqGrid('navButtonAdd', '#pager-locations',
+            {
+                caption: "",
+                buttonicon: "ui-icon-home",
+                onClickButton: function() {
+                    location.replace('/')
+                },
+                position: "last",
+                title: "Home",
+                cursor: "pointer"
+            }
+        );
+        
+        
+        // dealerships grid        
+        $("#list-dealerships").jqGrid({
+            url: '/admin/read/table/dealerships/format/html',
+            datatype: "xml",
+            colNames:['Index',
+                    'id',
+                    'Date Created',
+                    'Last Updated',
+                    'User',
+                    'Active',
+                    'Code',
+                    'Name',
+                    'City',
+                    'City [Allocated]',
+                    'General Manager',
+                ],
+            colModel:[
+                {name:'1',index:'1', hidden: true},
+                {name:'id',index:'id', hidden: true},
+                {name:'date_created',index:'date_created', align: 'center', hidden: true},
+                {name:'last_updated',index:'last_updated', align: 'center', hidden: true},
+                {name:'user',index:'user', hidden: true},
+                {name:'active',index:'active', align: 'center', hidden: true},
+                {name:'code',index:'code', hidden: false},
+                {name:'name',index:'name', hidden: false, editable:true},
+                {name:'city',index:'city', hidden: false, editable:true},
+                {name:'allocated_city',index:'allocated_city', hidden: false, editable:true},
+                {name:'general_manager',index:'general_manager', hidden: false, editable:true},
+            ],
+            pager:'#pager-dealerships',
+            rowNum: 25,
+            rowList: [5, 10, 25, 50, 100, 500],
+            sortname: '1',
+            sortorder: 'asc',
+            viewrecords: true,
+            editurl: '/admin/edit/table/dealerships/format/html',            
+            height: 350,
+            width: 875,
+            caption: "Dealerships",
+            loadError: function(xhr, status, error) {
+                    $("#detail-inner").html(status + "<br>" + error);
+                    $("#detail").dialog("open");
+                    return false;
+            },
+            ondblClickRow: function(id) {
+                
+                var editOptions = {
+                    closeAfterEdit:true,
+                    editData:{
+                    },
+                    afterComplete: function() {
+                    }                            
+                };
+
+                var ret = $(this).jqGrid('editGridRow', id, editOptions);
+                
+                
+            }
+        });
+        
+        $("#list-dealerships").jqGrid(
+            'navGrid',
+            '#pager-dealerships',
+            {del:true,add:true,edit:true,search:true,view:false},
+            {
+                closeAfterEdit:true,
+                editData:{
+                    //'editing_shit':'editing',
+                },
+                afterComplete: function() {
+                }
+                                
+            }, // parms for edit
+            {
+                closeAfterAdd:true,
+                editData:{
+                    //'adding_shit':'adding',
+                },
+                afterComplete: function() {
+                }                
+            }, // parms for add
+            {
+                afterComplete: function() {
+                }                
+            }, // parms for delete
+            {closeAfterSearch:true,Find:'Find...',multipleSearch:true},
+            {} // parms for view
+        );
+
+        $("#list-dealerships").jqGrid(
+            'navGrid',
+            '#pager-dealerships'
+        ).jqGrid('navButtonAdd', '#pager-dealerships',
+            {
+                caption: "",
+                buttonicon: "ui-icon-arrowstop-1-s",
+                onClickButton: function() {
+                    location.replace('<?php echo $this->excel ."dealerships"; ?>');
+                },
+                position: "last",
+                title: "Excel Download",
+                cursor: "pointer"
+            }
+        ).jqGrid('navButtonAdd', '#pager-dealerships',
+            {
+                caption: "",
+                buttonicon: "ui-icon-home",
+                onClickButton: function() {
+                    location.replace('/')
+                },
+                position: "last",
+                title: "Home",
+                cursor: "pointer"
+            }
+        );
+        
+        
+        // sessions grid        
+        $("#list-sessions").jqGrid({
+            url: '/admin/read/table/view_sessions/format/html',
+            datatype: "xml",
+            colNames:['Index',
+                    'id',
+                    'Date Created',
+                    'Last Updated',
+                    'User',
+                    'Active',
+                    'Name',
+                    'Description',
+                    'Location',
+                    'Schedule Date',
+                    'Start',
+                    'End',
+                    'Room',
+                ],
+            colModel:[
+                {name:'1',index:'1', hidden: true},
+                {name:'id',index:'id', hidden: true},
+                {name:'date_created',index:'date_created', align: 'center', hidden: true},
+                {name:'last_updated',index:'last_updated', align: 'center', hidden: true},
+                {name:'user',index:'user', hidden: true},
+                {name:'active',index:'active', align: 'center', hidden: true},
+                {name:'name',index:'name', hidden: false, editable:true},
+                {name:'description',index:'description', hidden: false, editable:true},
+                {name:'location_id',index:'location_id', hidden: false},
+                {name:'schedule_date',index:'schedule_date', hidden: false, editable:true},
+                {name:'start',index:'start', hidden: false, editable:true},
+                {name:'end',index:'end', hidden: false, editable:true},
+                {name:'room',index:'room', hidden: false, editable:true},
+            ],
+            pager:'#pager-sessions',
+            rowNum: 25,
+            rowList: [5, 10, 25, 50, 100, 500],
+            sortname: '1',
+            sortorder: 'asc',
+            viewrecords: true,
+            editurl: '/admin/edit/table/sessions/format/html',            
+            height: 350,
+            width: 875,
+            caption: "Sessions",
+            loadError: function(xhr, status, error) {
+                    $("#detail-inner").html(status + "<br>" + error);
+                    $("#detail").dialog("open");
+                    return false;
+            },
+            ondblClickRow: function(id) {
+                
+                var editOptions = {
+                    closeAfterEdit:true,
+                    editData:{
+                    },
+                    afterComplete: function() {
+                    }                            
+                };
+
+                var ret = $(this).jqGrid('editGridRow', id, editOptions);
+                
+                
+            }
+        });
+        
+        $("#list-sessions").jqGrid(
+            'navGrid',
+            '#pager-sessions',
+            {del:true,add:true,edit:true,search:true,view:false},
+            {
+                closeAfterEdit:true,
+                editData:{
+                    //'editing_shit':'editing',
+                },
+                afterComplete: function() {
+                }
+                                
+            }, // parms for edit
+            {
+                closeAfterAdd:true,
+                editData:{
+                    //'adding_shit':'adding',
+                },
+                afterComplete: function() {
+                }                
+            }, // parms for add
+            {
+                afterComplete: function() {
+                }                
+            }, // parms for delete
+            {closeAfterSearch:true,Find:'Find...',multipleSearch:true},
+            {} // parms for view
+        );
+
+        $("#list-sessions").jqGrid(
+            'navGrid',
+            '#pager-sessions'
+        ).jqGrid('navButtonAdd', '#pager-sessions',
+            {
+                caption: "",
+                buttonicon: "ui-icon-arrowstop-1-s",
+                onClickButton: function() {
+                    location.replace('<?php echo $this->excel ."view_sessions"; ?>');
+                },
+                position: "last",
+                title: "Excel Download",
+                cursor: "pointer"
+            }
+        ).jqGrid('navButtonAdd', '#pager-sessions',
+            {
+                caption: "",
+                buttonicon: "ui-icon-home",
+                onClickButton: function() {
+                    location.replace('/')
+                },
+                position: "last",
+                title: "Home",
+                cursor: "pointer"
+            }
+        );
+        
+
+
+        // participants grid        
+        $("#list-participants").jqGrid({
+            url: '/admin/read/table/view_participants/format/html',
+            datatype: "xml",
+            colNames:['Index',
+                    'id',
+                    'Date Created',
+                    'Last Updated',
+                    'User',
+                    'Active',
+                    'First Name',
+                    'Last Name',
+                    'Title',
+                    'Dealer',
+                    'Location',
+                ],
+            colModel:[
+                {name:'1',index:'1', hidden: true},
+                {name:'id',index:'id', hidden: true},
+                {name:'date_created',index:'date_created', align: 'center', hidden: true},
+                {name:'last_updated',index:'last_updated', align: 'center', hidden: true},
+                {name:'user',index:'user', hidden: true},
+                {name:'active',index:'active', align: 'center', hidden: true},
+                {name:'first_name',index:'first_name', hidden: false, editable:true},
+                {name:'last_name',index:'last_name', hidden: false, editable:true},
+                {name:'title',index:'title', hidden: false, editable:true},
+                {name:'dealer_id',index:'dealer_id', hidden: false, editable:true},
+                {name:'location_id',index:'location_id', hidden: false, editable:true},
+            ],
+            pager:'#pager-participants',
+            rowNum: 25,
+            rowList: [5, 10, 25, 50, 100, 500],
+            sortname: '1',
+            sortorder: 'asc',
+            viewrecords: true,
+            editurl: '/admin/edit/table/participants/format/html',            
+            height: 350,
+            width: 875,
+            caption: "Meeting Participants",
+            loadError: function(xhr, status, error) {
+                    $("#detail-inner").html(status + "<br>" + error);
+                    $("#detail").dialog("open");
+                    return false;
+            },
+            ondblClickRow: function(id) {
+                
+                var editOptions = {
+                    closeAfterEdit:true,
+                    editData:{
+                    },
+                    afterComplete: function() {
+                    }                            
+                };
+
+                var ret = $(this).jqGrid('editGridRow', id, editOptions);
+                
+                
+            }
+        });
+        
+        $("#list-participants").jqGrid(
+            'navGrid',
+            '#pager-participants',
+            {del:false,add:false,edit:false,search:true,view:false},
+            {
+                closeAfterEdit:true,
+                editData:{
+                    //'editing_shit':'editing',
+                },
+                afterComplete: function() {
+                }
+                                
+            }, // parms for edit
+            {
+                closeAfterAdd:true,
+                editData:{
+                    //'adding_shit':'adding',
+                },
+                afterComplete: function() {
+                }                
+            }, // parms for add
+            {
+                afterComplete: function() {
+                }                
+            }, // parms for delete
+            {closeAfterSearch:true,Find:'Find...',multipleSearch:true},
+            {} // parms for view
+        );
+
+        $("#list-participants").jqGrid(
+            'navGrid',
+            '#pager-participants'
+        ).jqGrid('navButtonAdd', '#pager-participants',
+            {
+                caption: "",
+                buttonicon: "ui-icon-arrowstop-1-s",
+                onClickButton: function() {
+                    location.replace('<?php echo $this->excel ."view_participants"; ?>');
+                },
+                position: "last",
+                title: "Excel Download",
+                cursor: "pointer"
+            }
+        ).jqGrid('navButtonAdd', '#pager-participants',
+            {
+                caption: "",
+                buttonicon: "ui-icon-home",
+                onClickButton: function() {
+                    location.replace('/')
+                },
+                position: "last",
+                title: "Home",
+                cursor: "pointer"
+            }
+        );
+        
+        
+
+        // product_training grid        
+        $("#list-product-training").jqGrid({
+            url: '/admin/read/table/view_product_training/format/html',
+            datatype: "xml",
+            colNames:['Index',
+                    'id',
+                    'Date Created',
+                    'Last Updated',
+                    'User',
+                    'Active',
+                    'Name',
+                    'Description',
+                    'Where',
+                    'When',
+                    'Why',
+                    'Location',
+                ],
+            colModel:[
+                {name:'1',index:'1', hidden: true},
+                {name:'id',index:'id', hidden: true},
+                {name:'date_created',index:'date_created', align: 'center', hidden: true},
+                {name:'last_updated',index:'last_updated', align: 'center', hidden: true},
+                {name:'user',index:'user', hidden: true},
+                {name:'active',index:'active', align: 'center', hidden: true},
+                {name:'name',index:'name', hidden: false, editable:true},
+                {name:'description',index:'description', hidden: false, editable:true},
+                {name:'where',index:'where', hidden: false, editable:true},
+                {name:'when',index:'when', hidden: false, editable:true},
+                {name:'why',index:'why', hidden: false, editable:true},
+                {name:'location_id',index:'location_id', hidden: false},
+            ],
+            pager:'#pager-product-training',
+            rowNum: 25,
+            rowList: [5, 10, 25, 50, 100, 500],
+            sortname: '1',
+            sortorder: 'asc',
+            viewrecords: true,
+            editurl: '/admin/edit/table/product_training/format/html',            
+            height: 350,
+            width: 875,
+            caption: "Product Training",
+            loadError: function(xhr, status, error) {
+                    $("#detail-inner").html(status + "<br>" + error);
+                    $("#detail").dialog("open");
+                    return false;
+            },
+            ondblClickRow: function(id) {
+                
+                var editOptions = {
+                    closeAfterEdit:true,
+                    editData:{
+                    },
+                    afterComplete: function() {
+                    }                            
+                };
+
+                var ret = $(this).jqGrid('editGridRow', id, editOptions);
+                
+                
+            }
+        });
+        
+        $("#list-product-training").jqGrid(
+            'navGrid',
+            '#pager-product-training',
+            {del:true,add:true,edit:true,search:true,view:false},
+            {
+                closeAfterEdit:true,
+                editData:{
+                    //'editing_shit':'editing',
+                },
+                afterComplete: function() {
+                }
+                                
+            }, // parms for edit
+            {
+                closeAfterAdd:true,
+                editData:{
+                    //'adding_shit':'adding',
+                },
+                afterComplete: function() {
+                }                
+            }, // parms for add
+            {
+                afterComplete: function() {
+                }                
+            }, // parms for delete
+            {closeAfterSearch:true,Find:'Find...',multipleSearch:true},
+            {} // parms for view
+        );
+
+        $("#list-product-training").jqGrid(
+            'navGrid',
+            '#pager-product-training'
+        ).jqGrid('navButtonAdd', '#pager-product-training',
+            {
+                caption: "",
+                buttonicon: "ui-icon-arrowstop-1-s",
+                onClickButton: function() {
+                    location.replace('<?php echo $this->excel ."view_product_training"; ?>');
+                },
+                position: "last",
+                title: "Excel Download",
+                cursor: "pointer"
+            }
+        ).jqGrid('navButtonAdd', '#pager-product-training',
+            {
+                caption: "",
+                buttonicon: "ui-icon-home",
+                onClickButton: function() {
+                    location.replace('/')
+                },
+                position: "last",
+                title: "Home",
+                cursor: "pointer"
+            }
+        );
+        
+        
+        $("#tabs").tabs();
+
+    });
+   
+})(jQuery);
+
+
+</script>        
+
+<div id="index-content">
+
+    <!--
+    <img src="/images/ghost 3_d-cropped.jpg" alt="" id="index-image-1"/>        
+    -->
+
+    <img src="/images/lockdown-cropped.jpg" alt="" id="index-image-1"/>
+    
+    <h3>Administration</h3>
+    
+    <p>
+        Use the following grids to add, update, edit, and delete data relating 
+        too the RR5 product training.
+    </p>
+
+    <div id="tabs">
+        <ul>            
+            <li><a href="#tabs-6">Meeting Participants</a></li>
+            <li><a href="#tabs-2">Session Attendees</a></li>
+            <li><a href="#tabs-1">Users</a></li>
+            <li><a href="#tabs-3">Locations</a></li>
+            <li><a href="#tabs-4">Dealerships</a></li>
+            <li><a href="#tabs-5">Sessions</a></li>
+            <li><a href="#tabs-7">Product Training</a></li>
+        </ul>
+                
+        <div id="tabs-1">
+
+            <table id="list-users"></table>
+            <div id="pager-users"></div>
+
+        </div>
+
+        <div id="tabs-2">
+
+            <table id="list-attendees"></table>
+            <div id="pager-attendees"></div>
+
+        </div>
+
+        <div id="tabs-3">
+
+            <table id="list-locations"></table>
+            <div id="pager-locations"></div>
+
+        </div>
+
+        <div id="tabs-4">
+
+            <table id="list-dealerships"></table>
+            <div id="pager-dealerships"></div>
+
+        </div>
+
+        <div id="tabs-5">
+
+            <table id="list-sessions"></table>
+            <div id="pager-sessions"></div>
+
+        </div>
+        
+        <div id="tabs-6">
+
+            <table id="list-participants"></table>
+            <div id="pager-participants"></div>
+
+        </div>
+        
+        <div id="tabs-7">
+
+            <table id="list-product-training"></table>
+            <div id="pager-product-training"></div>
+
+        </div>
+        
+    </div>
+    
+    
+    
+</div>
+
+<div id="detail" title="User Detail">
+    <div id="detail-inner"></div>
+</div>

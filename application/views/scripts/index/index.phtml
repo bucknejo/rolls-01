@@ -1,0 +1,70 @@
+<style type="text/css">
+    /*#index-content {margin-bottom:15px;padding:10px;width:918px;border:1px solid #780200;-moz-box-shadow: 0 0 5px #ddd;-webkit-box-shadow: 0 0 5px#ddd;box-shadow: 0 0 5px #ddd;}*/
+    
+    #index-content {margin-bottom:15px;padding:10px;width:918px;}
+    #index-image-1 {}
+    #index-image-2 {margin-left:525px;}
+    
+    #index-header {font-size:18px;font-weight:bold;text-align:center;padding:20px;}
+    
+    .index-paragraph {padding:20px 0px;}
+    
+    
+</style>
+
+
+<script type="text/javascript">
+    
+;(function($){
+ 
+    $(document).ready(function(){
+        
+        $("#submit-logon").button().click(function() {
+            $("#form-logon").submit();
+        });
+        
+                
+        $("#form-logon").validate();
+        
+    });
+   
+})(jQuery);
+    
+</script>
+
+<div id="index-content">
+
+    <img src="/images/lockdown-cropped.jpg" alt="" id="index-image-1"/>
+    
+    <div class="index-paragraph">
+        Please log-in to begin your registration.
+    </div>
+
+    <form action="/" method="post" id="form-logon">
+    <table width="50%" align="" border="0">
+        <tr>
+            <td colspan="3" align="center"><span class="site-label-3"><?php echo $this->message;?></span></td>
+        </tr>
+        <tr>
+            <td><span class="site-label-1">User Name:</span></td>
+            <td><input type="text" class="site-text-1 required" name="user_id" id="user_id" value="" /></td>
+            <td>&nbsp;</td>                                
+        </tr>
+        <tr>
+            <td><span class="site-label-1">Password:</span></td>
+            <td><input type="password" class="site-text-1 required" name="password" id="password" value="" /></td>
+            <td>
+                <span class="site-label-2"></span>
+            </td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td align="left"><button class="" name="" id="submit-logon">Submit</button></td>
+            <td>&nbsp;</td>
+        </tr>
+    </table>
+    </form>
+    
+    
+</div>
+

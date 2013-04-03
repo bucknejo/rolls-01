@@ -1,0 +1,56 @@
+/*
+*       Colors
+*       
+Color name: RGB #0088CE, Pantone Process Blue
+*
+*
+*
+5067A5      80,103,165
+8393BC      131,147,188
+B1BAD4      177,186,212
+D2D6E5      210,214,229
+
+780200      120 2 0
+
+
+
+*/
+
+
+body {background: url('/images/body-bg.gif') repeat;font-family:"Gill Sans", "Gill Sans MT", "Calibri", "Arial";font-size:14px;}
+
+a img {border:none;}
+
+#content {left:50%;margin-left:-470px;padding-top:0px;position:absolute;width:940px;background-color:#fff;margin-bottom:10px;}
+
+#tc {}
+#lc {}
+#bc {}
+
+#loader {background: url(/images/ajax-loader-1.gif) no-repeat center center;left:50%;margin-left:-470px;top:250px;position:absolute;width:75px;z-index: 9999;}
+
+a.site-link {text-decoration:none;color:#000;}
+a.site-link:link {color:#000;}
+a.site-link:hover {color:#780200;}
+
+a.site-link-1 {font-size:12px;font-weight:normal;text-decoration:none;color:#780200;}
+a.site-link-1:link {font-size:12px;font-weight:normal;color:#780200;}
+a.site-link-1:hover {font-size:12px;font-weight:normal;color:#666666;}
+
+a.site-link-2 {font-size:11px;font-weight:bold;text-decoration:underline;color:#780200;}
+a.site-link-2:link {font-size:11px;font-weight:bold;color:#780200;}
+a.site-link-2:hover {font-size:11px;font-weight:bold;color:#666666;}
+
+
+.site-label-1 {font-size:18px;color:#999999;font-weight:normal;}
+.site-label-2 {font-size:16px;color:#666666;}
+.site-label-3 {font-size:11px;color:#cc3333;padding:5px;font-weight:bold;}
+.site-text-1 {width:200px;border:1px solid #999999;width:200px;-moz-box-shadow: 0 0 5px #ddd;-webkit-box-shadow: 0 0 5px#ddd;box-shadow: 0 0 5px #ddd;}
+.site-text-2 {width:50px;border:1px solid #999999;width:200px;-moz-box-shadow: 0 0 5px #ddd;-webkit-box-shadow: 0 0 5px#ddd;box-shadow: 0 0 5px #ddd;}
+
+.site-select-1 {width:200px;border:1px solid #999999;width:200px;-moz-box-shadow: 0 0 5px #ddd;-webkit-box-shadow: 0 0 5px#ddd;box-shadow: 0 0 5px #ddd;}
+
+/* validation */
+label.error {color: #cc3333; padding-left: 3px;}
+/*div.error {color: #cc3333; padding:5px 0px 0px 0px;}*/
+input.error {border: 1px solid #900000;background-color:#fbecec;}

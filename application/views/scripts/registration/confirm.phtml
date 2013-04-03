@@ -1,0 +1,139 @@
+<?php 
+
+if(!empty($this->locations)) {$location = $this->locations[0];}
+if(!empty($this->users)) {$user = $this->users[0];}
+if(!empty($this->dealerships)) {$dealership = $this->dealerships[0];}
+if(!empty($this->addresses)) {$address = $this->addresses[0];}
+
+$config = Zend_Registry::get('config');
+$title = $config->project->title;
+
+
+?>
+
+<style type="text/css">
+    
+    #content {left:50%;margin-left:-300px;padding-top:0px;position:absolute;width:600px;}    
+    #top-container {width:600px;}
+    #links {display:none;}
+    
+    #index-container {position:relative;padding:0px 10px;border:0px solid #780200;margin-bottom:10px;}
+    #attending-div {margin:15px;}
+    
+    #print-confirm {float:right;}
+    
+    .session-container {margin-bottom:15px;}
+    
+    #dealer-info {margin:15px 0px;}
+    .dealer-key {font-size:12px;font-weight:bold;color:#333333;}
+    .dealer-value {font-size:12px;font-weight:normal;color:#666666;}
+    
+    #detail {clear:both;}
+    
+    #detail {display:none;}
+    #message {display:none;}
+        
+        
+</style>
+
+<script type="text/javascript">
+        
+    ;(function($) {
+        
+        $(document).ready(function(){
+            
+            $("#print").click(function(event){            
+                event.preventDefault();
+                window.print(event);
+                return false;
+            });
+            
+        });
+                
+    })(jQuery);
+        
+</script>
+
+<div id="index-container">
+    
+    <h3>Registration Confirmation
+        <a href="javascript:void(0);" id="print" class="site-link-1" style="float:right;padding:2px;">Print</a>
+    </h3>
+    
+    <p>
+        Congratulations!  You have successfully registered for <?php echo $title;?>.  Please print this page and keep a copy for your records.
+    </p>
+            
+    <div id="dealer-info">
+        
+        <table>
+            <tr>
+                <td style="width:75px;"><span class="dealer-key">Status:</span></td>
+                <td><span class="dealer-value"><?php echo ($user["attending"] == "1") ? "Registered" : "Not Attending";?></span></td>
+            </tr>            
+            <tr>
+                <td><span class="dealer-key">Manager:</span></td>
+                <td><span class="dealer-value"><?php echo $user["first_name"] . " " . $user["last_name"];?></span></td>
+            </tr>
+            <tr>
+                <td><span class="dealer-key">Name:</span></td>
+                <td><span class="dealer-value"><?php echo $dealership["name"];?></span></td>
+            </tr>
+            <tr>
+                <td><span class="dealer-key">Code:</span></td>
+                <td><span class="dealer-value"><?php echo $dealership["code"];?></span></td>
+            </tr>
+            <tr>
+                <td><span class="dealer-key">City:</span></td>
+                <td><span class="dealer-value"><?php echo $dealership["city"];?></span></td>
+            </tr>
+            <tr>
+                <td><span class="dealer-key">Location:</span></td>
+                <td><span class="dealer-value"><?php echo $dealership["allocated_city"];?></span></td>
+            </tr>
+            <tr>
+                <td valign="top"><span class="dealer-key">Hotel:</span></td>
+                <td>
+                    <span class="dealer-value">
+                        <?php echo $address["name"];?><br>
+                        <?php echo $address["address_1"];?><br>
+                        <?php echo $address["city"] . ", " . $address["state"] . " " . $address["zip"];?><br>                        
+                    </span>
+                </td>
+            </tr>
+        </table>
+        
+    </div>
+    
+    <div id="address-info" class="site-label-2">
+        
+                
+    </div>
+    
+    <?php if(!empty($this->sessions)):?>
+    <?php foreach($this->sessions as $session):?>
+    
+        <b><?php //echo "Attendees: " . count($session["attendees"]);?></b>
+    
+        <p><?php echo $session["name"] . " : " . $session["schedule_date"] . " : " . $session["start"] . ' to ' . $session["end"];?></p>
+        <ul>
+            <?php if(!empty($session["attendees"])):?>
+            <?php foreach($session["attendees"] as $attendee):?>  
+            <li><?php echo $attendee["first_name"] . " " . $attendee["last_name"]?></li>
+            <?php endforeach;?>
+            <?php endif;?>
+        </ul>
+    <?php endforeach;?>
+    <?php endif;?>
+    
+</div>
+
+
+
+<div id="detail" title="Registration Details">
+    <div id="detail-inner"></div>
+</div>
+
+<div id="message" title="Rolls Royce Motor Cars">
+    <div id="message-inner"></div>
+</div>

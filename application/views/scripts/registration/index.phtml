@@ -1,0 +1,992 @@
+<?php 
+
+if(!empty($this->locations)) {$location = $this->locations[0];}
+if(!empty($this->users)) {$user = $this->users[0];}
+if(!empty($this->dealerships)) {$dealership = $this->dealerships[0];}
+if(!empty($this->product_trainings)) {$product_training = $this->product_trainings[0];}
+
+?>
+
+<style type="text/css">
+    
+    #index-container {position:relative;padding:0px 10px 10px 10px;/*border:1px solid #780200;*/margin-bottom: 5px;}
+    #attending-div {margin:15px;}
+    
+    #print-confirm {float:right;}
+    
+    .session-container {margin-bottom:15px;}
+    
+    #dealer-info {margin:15px 0px;}
+    .dealer-key {font-size:12px;font-weight:bold;color:#333333;}
+    .dealer-value {font-size:12px;font-weight:normal;color:#666666;}
+    
+    #detail {clear:both;}
+    
+    #detail {display:none;}
+    #alert {display:none;}
+    #message {display:none;font-size:12px;}
+    
+    #tabs {margin:15px 0px;}
+
+    #help {display:none;left:50%;margin-left:-175px;position:fixed;top:250px;height:280px;width:350px;border:1px solid #780200;background-color:#fff;overflow-y:auto;}
+    
+</style>
+
+<script type="text/javascript">
+        
+    ;(function($) {
+        
+        $(document).ready(function(){
+            
+            $("#tabs").tabs();            
+            
+            var attending = <?php echo $user["attending"];?>
+            
+            if (attending == 1) {
+                $("#attending").prop("checked", true);
+            } else {
+                $("#attending").prop("checked", false);                
+            }
+            
+            
+            // attending the event checkbox
+            $("#attending").click(function(){
+                               
+                var id = <?php echo $user["id"];?>;                
+                var did = <?php echo $user["dealer_id"];?>;
+                var a = $(this).prop("checked");
+                var b = (a) ? 1 : 0;                
+                var url = '/registration/attending/id/'+id+'/attnd/'+b+'/dealer_id/'+did+'/format/html';
+                
+                // run ajax to update checkbox
+                $.ajax({
+                    url:url,                
+                    cache:false,
+                    async:false,
+                    dataType:'html',
+                    type:'post',
+                    error: function(responseText) {
+                        console.log("Error:" + responseText); 
+                    },
+                    success: function(responseText) {
+                        console.log("Success: " + responseText); 
+                        
+                        if (responseText == 1) {
+                            toggleRegistration(responseText);
+                        } else if (responseText == 0) {
+                            toggleRegistration(responseText);
+                        } else if (responseText == -1) {
+                            $("#attending").prop('checked', false);
+                            $("#alert-inner").html("We're sorry, your registration quota is already filled.  Please review your participant list.");
+                            $("#alert").dialog("open");
+                        }
+                                                
+                    },
+                    beforeSend: function() {
+                        $("#loader").show();
+                    },
+                    complete: function() {
+                        $("#loader").hide();
+                    }
+                });
+                
+            });
+            
+            // open hotel link in a new tab or window
+            $("#hotel-url").click(function(event){
+                event.preventDefault();
+
+                var id = <?php echo $user["id"];?>;                
+                var url = '/registration/register/id/'+id+'/room/1/format/html';
+                
+                // run ajax to update checkbox
+                $.ajax({
+                    url:url,                
+                    cache:false,
+                    async:false,
+                    dataType:'html',
+                    type:'post',
+                    error: function(responseText) {
+                        console.log("Error:" + responseText); 
+                    },
+                    success: function(responseText) {
+                        console.log("Success: " + responseText);                    
+                    },
+                    beforeSend: function() {
+                        $("#loader").show();
+                    },
+                    complete: function() {
+                        $("#loader").hide();
+                    }
+                });
+
+                url = $(this).prop("href");
+                window.open(url);                
+                return false;
+            });
+            
+            $("#print-confirm").click(function(event){
+                event.preventDefault();
+                
+                var url = $(this).prop("href");
+                window.open(url);                
+                
+                return false;
+            });
+            
+            
+            // provide a display for any popup text (debug)
+            $("#detail").dialog({
+                autoOpen: false,
+                modal: true,
+                height: 450,
+                width: 450,
+                show: "slide",
+                hide: "clip"
+            });
+            
+            // provide a display for any popup text (debug)
+            $("#alert").dialog({
+                autoOpen: false,
+                modal: true,
+                height: 150,
+                width: 375,
+                show: "slide",
+                hide: "clip"
+            });
+            
+            // provide a display for any popup text (debug)
+            $("#message").dialog({
+                autoOpen: false,
+                modal: true,
+                height: 150,
+                width: 375,
+                show: "slide",
+                hide: "clip"
+            });
+            
+            function toggleRegistration(status) {
+                
+                var url = '/registration/toggle/format/html';
+                
+                var data = {
+                    'status':status,
+                    'first_name':'<?php echo $user["first_name"];?>',
+                    'last_name':'<?php echo $user["last_name"];?>',
+                    'title':'<?php echo $user["title"];?>',
+                    'dealer_id':<?php echo $user["dealer_id"];?>,
+                    'location_id':<?php echo $user["location_id"];?>
+                }
+                
+                $.ajax({
+                    url:url,                
+                    cache:false,
+                    async:false,
+                    dataType:'html',
+                    type:'post',
+                    data: data,
+                    error: function(responseText) {
+                        console.log("Error:" + responseText); 
+                    },
+                    success: function(responseText) {
+                        console.log("Success: " + responseText);                                                 
+                    },
+                    beforeSend: function() {
+                        $("#loader").show();
+                    },
+                    complete: function() {
+                        $("#loader").hide();
+                    }
+                });
+                
+                $("#participants").trigger('reloadGrid');
+                
+            }
+            
+            function refreshDealerTotal(sid, did) {
+                
+                var url = '/registration/allotment/session_id/'+sid+'/dealer_id/'+did+'/format/html';
+                var total = 0;
+                // run ajax to update checkbox
+                $.ajax({
+                    url:url,                
+                    cache:false,
+                    async:false,
+                    dataType:'html',
+                    type:'get',
+                    error: function(responseText) {
+                        console.log("Error:" + responseText); 
+                    },
+                    success: function(responseText) {
+                        console.log("Success: " + responseText); 
+                        total = responseText;
+                                                
+                        if (total >= <?php echo $this->dealerMax;?>) {
+                            $("#add_session_"+sid).hide();
+                            
+                        } else {
+                            $("#add_session_"+sid).show();
+                        }
+                                                
+                    },
+                    beforeSend: function() {
+                        $("#loader").show();
+                    },
+                    complete: function() {
+                        $("#loader").hide();
+                    }
+                });
+                                
+            }
+            
+            function refreshAttendeeTotal(id) {
+                
+                var url = '/registration/total/session_id/'+id+'/format/html';
+                var total = 0;
+                // run ajax to update checkbox
+                $.ajax({
+                    url:url,                
+                    cache:false,
+                    async:false,
+                    dataType:'html',
+                    type:'get',
+                    error: function(responseText) {
+                        console.log("Error:" + responseText); 
+                    },
+                    success: function(responseText) {
+                        console.log("Success: " + responseText); 
+                        total = responseText;
+                        
+                        var html = "Current Total Attendees: " + total + "<span style='padding-left:10px'>Session Max: <?php echo $this->max;?></span>";
+                        
+                        if (total >= <?php echo $this->max;?>) {
+                            // somehow disable the add button in the grid 
+                            html = "Session is Booked!  Please contact the <a href='mailto:Angela.Bien@rolls-roycemotorcarsna.com' class='site-link-2' style='margin-right:10px;'>Event Manager.</a>  Current Total Attendees: " + total + "<span style='padding-left:10px'>Session Max: <?php echo $this->max;?></span>";
+                            $("#add_session_"+id).hide();
+                            
+                        } else {
+                            // somehow enable the add button in the grid
+                            html = "Current Total Attendees: " + total + "<span style='padding-left:10px'>Session Max: <?php echo $this->max;?></span>";
+                            $("#add_session_"+id).show();
+                        }
+                        
+                        $("#total-attendees-"+id).html(html);
+                        
+                    },
+                    beforeSend: function() {
+                        $("#loader").show();
+                    },
+                    complete: function() {
+                        $("#loader").hide();
+                    }
+                });
+                                
+            }
+            
+            function refreshParticipantTotal(id) {
+                
+                var url = '/registration/participant/dealer_id/'+id+'/format/html';
+                var total = 0;
+                // run ajax to update checkbox
+                $.ajax({
+                    url:url,                
+                    cache:false,
+                    async:false,
+                    dataType:'html',
+                    type:'get',
+                    error: function(responseText) {
+                        console.log("Error:" + responseText); 
+                    },
+                    success: function(responseText) {
+                        console.log("Success: " + responseText); 
+                        total = responseText;
+                                                
+                        if (total >= <?php echo $this->dealerMax;?>) {
+                            $("#add_participants").hide();
+                            
+                        } else {
+                            $("#add_participants").show();
+                        }
+                                                
+                    },
+                    beforeSend: function() {
+                        $("#loader").show();
+                    },
+                    complete: function() {
+                        $("#loader").hide();
+                    }
+                });
+                
+                
+            }
+            
+            function getTop(offset) {
+                
+                //var top = $(window).height()/2 - 150;
+                var top = offset;
+                
+                return top;
+                
+            }
+            
+            function getLeft() {
+                
+                var left = $(window).width()/2 - 150;
+                
+                return left;
+                
+            }
+            
+            function scrollUp() {
+                //$("html, body").animate({ scrollTop: 0 }, "slow");                
+            }
+            
+            function scrollDown() {
+                //$("html, body").animate({ scrollTop: $(document).height() }, "slow");                
+            }
+            
+            
+            // create grids for session
+            <?php if(!empty($this->sessions)):?>
+            <?php foreach($this->sessions as $session):?>
+                
+                <?php
+                    if (count($session["total"]) < $this->max) {
+                        $capacity = "<span style='position:absolute;right:35px;' id='total-attendees-".$session["id"]."'>Current Total Attendees: " . count($session["total"]) . "<span style='padding-left:10px'>Session Max: $this->max</span></span>";
+                    } else {
+                        $capacity = "<span style='position:absolute;right:35px;' id='total-attendees-".$session["id"]."'>Session is Booked!  Please contact the <a href='mailto:Angela.Bien@rolls-roycemotorcarsna.com' class='site-link-2'>Event Manager</a>.  Current Total Attendees: " . count($session["total"]) . "<span style='padding-left:10px'>Session Max: $this->max</span></span>";
+                    }
+                ?>
+                
+                
+                $("#session_<?php echo $session["id"];?>").jqGrid({
+                    url: '/registration/read/table/attendees/session_id/<?php echo $session["id"];?>/dealer_id/<?php echo $dealership["id"];?>/format/html',
+                    datatype: 'xml',
+                    colNames: [
+                        'Index', 
+                        'id',
+                        'date_created',
+                        'last_updated',
+                        'user',
+                        'active',
+                        'First Name',
+                        'Last Name',
+                        'Location',
+                        'Manager',
+                        'session_id',
+                        'Dealer Code',
+                        'Title',
+                    ],
+                    colModel: [
+                        {name:'index',index:'index',align:'',hidden:true},
+                        {name:'id',index:'id',align:'',hidden:true},
+                        {name:'date_created',index:'date_created',align:'',hidden:true},
+                        {name:'last_updated',index:'last_updated',align:'',hidden:true},
+                        {name:'user',index:'',align:'user',hidden:true},
+                        {name:'active',index:'',align:'active',hidden:true},
+                        {name:'first_name',index:'first_name',align:'',hidden:false, editable:true, align:"center", editrules:{required:true}},
+                        {name:'last_name',index:'last_name',align:'',hidden:false, editable:true, align:"center", editrules:{required:true}},
+                        {name:'location_id',index:'location_id',align:'',hidden:true},
+                        {name:'manager_id',index:'manager_id',align:'',hidden:true},
+                        {name:'session_id',index:'session_id',align:'',hidden:true},
+                        {name:'dealer_id',index:'dealer_id',align:'',hidden:true},
+                        {name:'title',index:'title',align:'',hidden:false, editable:true, align:"center", editrules:{required:true}},
+                    ],
+                    pager:'#pager_<?php echo $session["id"];?>',
+                    rowNum: 25,
+                    rowList: [5, 10, 25, 50, 100, 500],
+                    sortname: '1',
+                    sortorder: 'asc',
+                    viewrecords: true,
+                    editurl: '/registration/edit/table/attendees/format/html',
+                    height: 80,
+                    width: 875,
+                    //multiselect: true,
+                    caption: "<?php 
+                    
+                                echo    //$session["name"] . " :: " . 
+                                        //date("m/d/Y", strtotime($session["schedule_date"])) . " :: " . 
+                                        $session["start"] . ' to ' . 
+                                        $session["end"] . " &gt;&gt; " .
+                                        " Dealer Maximum: " . $this->dealerMax .
+                                        $capacity;
+                            
+                            ?>",
+                    loadError: function(xhr, status, error) {
+                            $("#detail-inner").html(status + "<br>" + error);
+                            $("#detail").dialog("open");
+                            return false;
+                    },
+                    loadComplete: function() {
+                        refreshAttendeeTotal(<?php echo $session["id"];?>);                            
+                        refreshDealerTotal(<?php echo $session["id"];?>, <?php echo $user["dealer_id"];?>);
+                    },
+                    ondblClickRow: function(id) {
+                                                                        
+                       var editOptions = {
+                            //top: getTop($("#session_<?php echo $session["id"];?>").offset().top),
+                            //left: getLeft(),
+                            closeAfterEdit:true,
+                            modal: true,
+                            jqModal: true,                            
+                            editData:{
+                                'location_id':<?php echo $session["location_id"];?>, 
+                                'manager_id':<?php echo $user["id"];?>, 
+                                'session_id': <?php echo $session["id"];?>, 
+                                'dealer_id': <?php echo $user["dealer_id"];?>
+                            },
+                            beforeShowForm: function() {
+                                scrollUp();
+                            },
+                            afterComplete: function() {
+                                refreshAttendeeTotal(<?php echo $session["id"];?>);
+                                refreshDealerTotal(<?php echo $session["id"];?>, <?php echo $user["dealer_id"];?>);
+                            }                            
+                        };
+                        
+                        var ret = $(this).jqGrid('editGridRow', id, editOptions);
+                    }
+                    
+
+                });
+                
+                $("#session_<?php echo $session["id"];?>").jqGrid(
+                    'navGrid',
+                    '#pager_<?php echo $session["id"];?>',
+                    {
+                        del:true,
+                        add:true,
+                        edit:true,
+                        search:false,
+                        view:false
+                    },
+                    {
+                        //top: getTop($("#session_<?php echo $session["id"];?>").offset().top),
+                        //left: getLeft(),
+                        closeAfterEdit:true,
+                        modal: true,
+                        jqModal: true,
+                        editData:{
+                            //'editing_shit':'editing',
+                            'location_id':<?php echo $session["location_id"];?>, 
+                            'manager_id':<?php echo $user["id"];?>, 
+                            'session_id': <?php echo $session["id"];?>, 
+                            'dealer_id': <?php echo $user["dealer_id"];?>
+                        },
+                        afterComplete: function() {
+                            refreshAttendeeTotal(<?php echo $session["id"];?>);
+                            refreshDealerTotal(<?php echo $session["id"];?>, <?php echo $user["dealer_id"];?>);                            
+                        },
+                        beforeShowForm: function() {
+                                scrollUp();                            
+                        }
+                        
+                        
+                    }, // parms for edit
+                    {
+                        //top: getTop($("#session_<?php echo $session["id"];?>").offset().top),
+                        //left: getLeft(),
+                        closeAfterAdd:true,
+                        modal: true,
+                        jqModal: true,
+                        editData:{
+                            //'adding_shit':'adding',
+                            'location_id':<?php echo $session["location_id"];?>, 
+                            'manager_id':<?php echo $user["id"];?>, 
+                            'session_id': <?php echo $session["id"];?>, 
+                            'dealer_id': <?php echo $user["dealer_id"];?>
+                        },
+                        afterComplete: function() {
+                            refreshAttendeeTotal(<?php echo $session["id"];?>);
+                            refreshDealerTotal(<?php echo $session["id"];?>, <?php echo $user["dealer_id"];?>);                            
+                        },
+                        beforeShowForm: function() {
+                            //scrollUp();                            
+                        },
+                        afterShowForm: function() {
+                            scrollDown();
+                        }
+                        
+                        
+                    }, // parms for add
+                    {
+                        //top: getTop($("#session_<?php echo $session["id"];?>").offset().top),
+                        //left: getLeft(),
+                        modal: true,
+                        jqModal: true,                        
+                        afterComplete: function() {
+                            refreshAttendeeTotal(<?php echo $session["id"];?>);
+                            refreshDealerTotal(<?php echo $session["id"];?>, <?php echo $user["dealer_id"];?>);                            
+                        },
+                        beforeShowForm: function() {
+                            scrollUp();                            
+                        }
+                    
+                    }, // parms for delete
+                    {closeAfterSearch:true,Find:'Find...',multipleSearch:true},
+                    {} // parms for view
+                );
+                    
+                
+                
+            <?php endforeach;?>
+            <?php endif;?>
+                
+
+            $("#tabs-participants").tabs();            
+            
+            // participants grid    
+            $("#participants").jqGrid({
+                url: '/registration/read/table/participants/dealer_id/<?php echo $dealership["id"];?>/format/html',
+                datatype: 'xml',
+                colNames: [
+                    'Index', 
+                    'id',
+                    'date_created',
+                    'last_updated',
+                    'user',
+                    'active',
+                    'First Name',
+                    'Last Name',
+                    'Title',
+                    'Dealer Id',
+                    'Location Id',
+                ],
+                colModel: [
+                    {name:'index',index:'index',align:'',hidden:true},
+                    {name:'id',index:'id',align:'',hidden:true},
+                    {name:'date_created',index:'date_created',align:'',hidden:true},
+                    {name:'last_updated',index:'last_updated',align:'',hidden:true},
+                    {name:'user',index:'',align:'user',hidden:true},
+                    {name:'active',index:'',align:'active',hidden:true},
+                    {name:'first_name',index:'first_name',align:'',hidden:false, editable:true, align:"center", editrules:{required:true}},
+                    {name:'last_name',index:'last_name',align:'',hidden:false, editable:true, align:"center", editrules:{required:true}},
+                    {name:'title',index:'title',align:'',hidden:false, editable:true, align:"center", editrules:{required:true}},
+                    {name:'dealer_id',index:'dealer_id',align:'',hidden:true},
+                    {name:'location_id',index:'location_id',align:'',hidden:true},
+                ],
+                pager:'#pager_participants',
+                rowNum: 25,
+                rowList: [5, 10, 25, 50, 100, 500],
+                sortname: '1',
+                sortorder: 'asc',
+                viewrecords: true,
+                editurl: '/registration/edit/table/participants/format/html',
+                height: 150,
+                width: 875,
+                //multiselect: true,
+                caption: "Participants &gt; &gt; Dealer Maximum: <?php echo $this->dealerMax;?>",
+                loadError: function(xhr, status, error) {
+                        $("#detail-inner").html(status + "<br>" + error);
+                        $("#detail").dialog("open");
+                        return false;
+                },
+                loadComplete: function() {
+                    refreshParticipantTotal(<?php echo $user["dealer_id"];?>);
+                },
+                ondblClickRow: function(id) {
+                    
+                    var editOptions = {
+                        //top: getTop($("#participants").offset().top),
+                        //left: getLeft(),
+                        modal: true,
+                        jqModal: true,                        
+                        closeAfterEdit:true,
+                        editData:{
+                            //'adding_shit':'adding',
+                            'dealer_id': <?php echo $dealership["id"];?>,
+                            'location_id':<?php echo $location["id"];?>
+                        },
+                        afterComplete: function() {
+                            refreshParticipantTotal(<?php echo $user["dealer_id"];?>);
+                        },
+                        beforeShowForm: function() {
+                            scrollUp();                            
+                        }
+                    };
+
+                    var ret = $(this).jqGrid('editGridRow', id, editOptions);
+                }
+
+
+            });
+
+            $("#participants").jqGrid(
+                'navGrid',
+                '#pager_participants',
+                {
+                    del:true,
+                    add:true,
+                    edit:true,
+                    search:false,
+                    view:false
+                },
+                {
+                    closeAfterEdit:true,
+                    modal: true,
+                    jqModal: true,                    
+                    editData:{
+                        'dealer_id': <?php echo $dealership["id"];?>,
+                        'location_id':<?php echo $location["id"];?>
+                    },
+                    afterComplete: function() {
+                        refreshParticipantTotal(<?php echo $user["dealer_id"];?>);
+                    },
+                    beforeShowForm: function() {
+                        scrollUp();                        
+                    }
+
+                }, // parms for edit
+                {
+                    closeAfterAdd:true,
+                    modal: true,
+                    jqModal: true,                    
+                    editData:{
+                        'dealer_id': <?php echo $dealership["id"];?>,
+                        'location_id':<?php echo $location["id"];?>
+                    },
+                    afterComplete: function() {                        
+                        refreshParticipantTotal(<?php echo $user["dealer_id"];?>);
+                    },
+                    beforeShowForm: function() {
+                        scrollUp();                        
+                    }
+                    
+                }, // parms for add
+                {
+                    modal: true,
+                    jqModal: true,                    
+                    afterComplete: function() {
+                        refreshParticipantTotal(<?php echo $user["dealer_id"];?>);
+                    },
+                    beforeShowForm: function() {
+                        scrollUp();                        
+                    }
+                    
+
+                }, // parms for delete
+                {closeAfterSearch:true,Find:'Find...',multipleSearch:true},
+                {} // parms for view
+            );
+        
+            
+            $("#anchor-help").click(function(event){
+                event.preventDefault();
+                $(this).trigger('hover');
+                return false;
+            });
+
+            $("#anchor-help").hover(
+                function() {
+                    $("#help").show(500);
+                }, 
+                function() {
+                }
+            );
+                
+            $("#help-close").click(function(event){
+                event.preventDefault();
+                $("#help").hide(500);
+                return false;
+            });
+            
+            $("#submit-registration").button().click(function(){
+               
+                var url = '/registration/submission/id/<?php echo $user["dealer_id"];?>/format/html';
+                
+                // run ajax to update checkbox
+                $.ajax({
+                    url:url,                
+                    cache:false,
+                    async:false,
+                    dataType:'html',
+                    type:'post',
+                    error: function(responseText) {
+                        console.log("Error:" + responseText);
+                        
+                        $("#message-success").css("display", "none");
+                        $("#message-failure").css("display", "block");
+                        $("#message").dialog("open");
+                        
+                    },
+                    success: function(responseText) {
+                        console.log("Success: " + responseText);  
+                        
+                        $("#message-success").css("display", "block");
+                        $("#message-failure").css("display", "none");
+                        $("#message").dialog("open");
+                        
+                    },
+                    beforeSend: function() {
+                        $("#loader").show();
+                    },
+                    complete: function() {
+                        $("#loader").hide();
+                    }
+                });
+               
+               
+            });
+            
+            $("#print-success").button().click(function(){
+                $("#print-confirm").trigger('click');
+            });
+            
+            
+        });
+        
+        
+                        
+    })(jQuery);
+        
+</script>
+
+<div id="index-container">
+
+    <!--
+    <img src="/images/ghost 2_d-cropped.jpg" alt="" id="index-image-1"/>
+    -->
+    
+    <img src="/images/lockdown-cropped.jpg" alt="" id="index-image-1"/>
+    
+    
+    <h3>
+        Please RSVP for both events detailed below.
+        <span style="float:right;">
+            <table border="0">
+                <tr>
+                    <td>
+                        <a href="#" id="anchor-help" class="site-link-1" style="">Help</a>
+                    </td>
+                    <td>
+                        <span style="color:#780200;padding:0px 3px 3px 3px;font-size:11px;">|</span>
+                    </td>
+                    <td>
+                        <a href="/registration/confirm" id="print-confirm" class="site-link-1" style="">Print Confirmation</a>            
+                    </td>
+                </tr>
+            </table>
+        </span>
+    </h3>
+    
+    <h3>Part I. Regional Business Meeting</h3>
+        
+    <table cellpadding="10">
+        <tr>
+            <td style="width:150px;" align="right">
+                <span class="site-label-1">Where</span>
+            </td>
+            <td>
+                <span class="site-label-2"><?php echo $location["hotel"] . " in " . $location["name"];?></span>
+            </td>
+        </tr>
+        <tr>
+            <td align="right">
+                <span class="site-label-1">When</span>
+            </td>
+            <td>
+                <span class="site-label-2"><?php echo $location["when"];?></span>
+            </td>
+        </tr>
+        <tr>
+            <td align="right" valign="top">
+                <span class="site-label-1">Why</span>
+            </td>
+            <td>
+                <span class="site-label-2"><?php echo $location["why"];?></span>
+            </td>
+        </tr>
+        <tr>
+            <td align="right">
+                <span class="site-label-1">RSVP</span>
+            </td>
+            <td>
+                <span class="site-label-2">
+                    
+                    <div>
+                        Yes, I plan to attend on the 
+                            <?php echo "<b>" . $location["description"] . "</b> on <b>" . date("m/d/Y", strtotime($location["start_date"])) . "</b>.";?>
+                        <input type="checkbox" name="attending" id="attending" checked />
+                    </div>
+                    
+                    
+                </span>
+            </td>
+        </tr>
+    </table>
+            
+
+    <div id="participants-1" style="margin:15px 15px 15px 15px;">
+        <table id="participants"></table>
+        <div id="pager_participants"></div>                    
+    </div>
+    
+    
+    <table cellpadding="10">
+        <tr>
+            <td style="width:100px;" valign="top" align="right">
+                <span class="site-label-1">
+                    Accommodations
+                </span>
+            </td>
+            
+            <td>
+                <?php if($location["id"] == "1"):?>
+                <?php include("mi-01.phtml");?>
+                <?php endif;?>
+                <?php if($location["id"] == "2"):?>
+                <?php include("la-01.phtml");?>
+                <?php endif;?>
+            </td>
+            
+        </tr>       
+        <tr>
+            <td style="width:150px;" valign="top" align="right">
+                <span class="site-label-1">
+                    Transfers
+                </span>
+            </td>
+            <td valign="top">
+                <span class="site-label-2">
+                    Attendees are responsible for their own ground transportation between the airport and the host hotel as well as the RR5 Closed Room Event.
+                </span>
+            </td>
+        </tr>
+    </table>
+    
+    <h3>Part II. RR5 Product Training</h3>
+    
+    
+    <table cellpadding="10">
+        <tr>
+            <td style="width:150px;" align="right">
+                <span class="site-label-1">Where</span>
+            </td>
+            <td>
+                <span class="site-label-2"><?php echo $product_training["where"];?></span>
+            </td>
+        </tr>
+        <tr>
+            <td align="right">
+                <span class="site-label-1">When</span>
+            </td>
+            <td>
+                <span class="site-label-2"><?php echo $product_training["when"];?></span>
+            </td>
+        </tr>
+        <tr>
+            <td align="right" valign="top">
+                <span class="site-label-1">Why</span>
+            </td>
+            <td>
+                <span class="site-label-2"><?php echo $product_training["why"];?></span>
+            </td>
+        </tr>
+        <tr>
+            <td align="right">
+                <span class="site-label-1">RSVP</span>
+            </td>
+            <td>
+                <span class="site-label-2">Please enter the name(s) of the training attendees by session date below.</span>
+            </td>
+        </tr>
+    </table>
+
+    <!--
+    <div id="dealer-info">
+        
+        <table>
+            <tr>
+                <td><span class="dealer-key">General Manager:</span></td>
+                <td><span class="dealer-value"><?php echo $user["first_name"] . " " . $user["last_name"];?></span></td>
+            </tr>
+            <tr>
+                <td><span class="dealer-key">Name:</span></td>
+                <td><span class="dealer-value"><?php echo $dealership["name"];?></span></td>
+            </tr>
+            <tr>
+                <td><span class="dealer-key">Code:</span></td>
+                <td><span class="dealer-value"><?php echo $dealership["code"];?></span></td>
+            </tr>
+            <tr>
+                <td><span class="dealer-key">City:</span></td>
+                <td><span class="dealer-value"><?php echo $dealership["city"];?></span></td>
+            </tr>
+            <tr>
+                <td><span class="dealer-key">City [Allocated]:</span></td>
+                <td><span class="dealer-value"><?php echo $dealership["allocated_city"];?></span></td>
+            </tr>
+        </table>
+        
+    </div>
+    -->
+    
+    <div id="tabs">
+        
+        <ul>
+            <?php $count=1;?>
+            <?php if(!empty($this->sessions)):?>
+            <?php foreach($this->sessions as $session):?>
+            <li><a href="#tabs-<?php echo $count;?>"><?php echo $session["name"] . " - " . date("m/d/Y", strtotime($session["schedule_date"]));?></a></li>
+            <?php $count++;?>
+            <?php endforeach;?>
+            <?php endif;?>
+        </ul>
+        
+        <?php $count=1;?>
+        <?php if(!empty($this->sessions)):?>
+        <?php foreach($this->sessions as $session):?>
+
+        <div id="tabs-<?php echo $count;?>">
+            <table id="session_<?php echo $session["id"];?>"></table>
+            <div id="pager_<?php echo $session["id"];?>"></div>        
+        </div>
+
+        <?php $count++;?>
+        <?php endforeach;?>
+        <?php endif;?>
+        
+    </div>
+    
+    
+</div>
+
+<div style="text-align:center;margin-bottom:20px;">
+    <div id="submit-registration">Submit</div>
+</div>
+
+<div id="detail" title="Registration Details">
+    <div id="detail-inner"></div>
+</div>
+
+<div id="alert" title="Rolls Royce Motor Cars">
+    <div id="alert-inner">
+        
+    </div>
+</div>
+
+<div id="message" title="Rolls Royce Motor Cars">
+    <div id="message-success" style="width:100%">
+        <p>Your registration is complete.  Please print a copy for your records.</p>
+        <div id="print-success" style="text-align:center;margin-left:40%;">Print</div>
+    </div>
+    <div id="message-failure">
+        <p>Your registration is not complete.  Please contact <a href="mailto:Angela.Bien@rolls-roycemotorcarsna.com" class="site-link-2">support</a>.</p>
+    </div>    
+</div>
+
+<div id="help">
+    <a href="javascript:void(0);" class="site-link-1" id="help-close" style="padding:5px;float:right;color:#780200;font-size:11px;font-weight:bold;">X</a>
+    <div style="padding:20px;">
+        <p>
+            To add, edit or delete a meeting participant, locate the icons in the lower left corner of the box.
+        </p>
+        <div style="text-align:center">
+            <img src="/images/rr-grid-help-01.jpg" id="rr-grid-help" style=""/>
+        </div>        
+        <p>
+            Click on the desired function and follow the instructions.
+        </p>        
+    </div>
+</div>
+
